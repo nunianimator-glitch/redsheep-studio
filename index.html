@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redsheep Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook</title>
+<meta name="description" content="บริการตัดต่อวิดีโอและสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN / no-build) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: 'hsl(var(--background))',
+          foreground: 'hsl(var(--foreground))',
+          card: 'hsl(var(--card))',
+          'card-foreground': 'hsl(var(--card-foreground))',
+          primary: 'hsl(var(--primary))',
+          'primary-foreground': 'hsl(var(--primary-foreground))',
+          secondary: 'hsl(var(--secondary))',
+          'secondary-foreground': 'hsl(var(--secondary-foreground))',
+          muted: 'hsl(var(--muted))',
+          'muted-foreground': 'hsl(var(--muted-foreground))',
+          accent: 'hsl(var(--accent))',
+          'accent-foreground': 'hsl(var(--accent-foreground))',
+          border: 'hsl(var(--border))',
+          input: 'hsl(var(--input))',
+          ring: 'hsl(var(--ring))',
+        },
+        fontFamily: {
+          sans: ['"Noto Sans Thai"', 'sans-serif'],
+          display: ['"Noto Sans Thai"', 'sans-serif'],
+        },
+        borderRadius: {
+          xl: 'calc(var(--radius) + 4px)',
+          lg: 'var(--radius)',
+          md: 'calc(var(--radius) - 4px)',
+          sm: 'calc(var(--radius) - 8px)',
+        },
+      },
+    },
+  };
+</script>
+
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 96%;
+    --primary: 355 78% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 8 90% 60%;
+    --accent-foreground: 0 0% 8%;
+    --border: 0 0% 18%;
+    --input: 0 0% 16%;
+    --ring: 355 82% 55%;
+    --radius: 0.9rem;
+    --brand: 355 82% 52%;
+    --brand-2: 14 90% 60%;
+  }
+  html { scroll-behavior: smooth; }
+  section[id], #top { scroll-margin-top: 4.5rem; }
+  body {
+    font-family: "Noto Sans Thai", sans-serif; overflow-x: clip; color: hsl(var(--foreground));
+    background:
+      radial-gradient(ellipse 70% 55% at 15% -10%, hsl(var(--primary) / 0.30), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 8%, hsl(var(--accent) / 0.22), transparent 60%),
+      radial-gradient(ellipse 65% 55% at 50% 110%, hsl(var(--primary) / 0.18), transparent 60%),
+      hsl(var(--background));
+    background-attachment: fixed;
+  }
+  .font-display { font-family: "Noto Sans Thai", sans-serif; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .animate-marquee { animation: marquee 28s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .animate-marquee { animation: none; } }
+  .text-gradient {
+    background: linear-gradient(100deg, hsl(var(--brand)) 0%, hsl(var(--brand-2)) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .nav-link { position: relative; z-index: 1; padding: 0.5rem 0.9rem; border-radius: 999px; transition: color .25s ease; }
+  .nav-link:hover { color: hsl(var(--foreground)); }
+  .nav-link.active { color: hsl(var(--primary-foreground)); font-weight: 600; }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  .hero-fade-in { animation: heroFadeIn .7s ease-out both; }
+  @keyframes heroFadeIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  ::selection { background: hsl(var(--primary) / 0.3); }
+
+  /* ===== Shared effect system (identical in index.html & admin.html) ===== */
+
+  /* Menu active indicator — solid gradient pill behind the current menu item */
+  .menu-active-indicator {
+    position: absolute; top: 0; left: 0; opacity: 0; border-radius: 999px; pointer-events: none; z-index: 0;
+    background: linear-gradient(120deg, hsl(var(--brand)) 0%, hsl(var(--brand-2)) 100%);
+    box-shadow: 0 0 20px 2px hsl(var(--primary) / .3);
+    transition: transform .38s cubic-bezier(.4,0,.2,1), width .38s cubic-bezier(.4,0,.2,1), height .38s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+  }
+
+  /* Hover glide — glow with a visible colored edge that glides to the menu item under the cursor */
+  .hover-glide {
+    position: absolute; top: 0; left: 0; z-index: 0; opacity: 0; pointer-events: none; border-radius: 999px;
+    background: hsl(var(--primary) / 0.18);
+    border: 1px solid hsl(var(--primary) / 0.5);
+    box-shadow: 0 0 18px 2px hsl(var(--primary) / 0.25);
+    transition: transform .32s cubic-bezier(.4,0,.2,1), width .32s cubic-bezier(.4,0,.2,1), height .32s cubic-bezier(.4,0,.2,1), opacity .2s ease;
+  }
+
+  /* Pill buttons — soft glow only, no lift, no shine sweep */
+  a.rounded-full, button.rounded-full, label.rounded-full {
+    transition: box-shadow .25s ease, border-color .25s ease, color .2s ease;
+  }
+  a.rounded-full:hover, button.rounded-full:hover, label.rounded-full:hover {
+    box-shadow: 0 0 18px 2px hsl(var(--primary) / .3);
+  }
+
+  /* Small icon buttons — glow only, no lift */
+  .icon-btn { transition: box-shadow .25s ease, border-color .25s ease, background-color .25s ease, color .2s ease; }
+  .icon-btn:hover { box-shadow: 0 0 18px 2px hsl(var(--primary) / .3); }
+
+  /* Hero badge — static glow border; text in a static theme accent color (no animation) */
+  .hero-badge {
+    border-color: hsl(var(--accent) / 0.55);
+    box-shadow: 0 0 14px 1px hsl(var(--accent) / 0.35);
+  }
+  .hero-badge .badge-text {
+    color: hsl(var(--accent));
+  }
+
+  /* Secondary CTA button — static (non-blinking) glow border */
+  .btn-glow-secondary {
+    border-color: hsl(var(--primary) / 0.6);
+    box-shadow: 0 0 16px 2px hsl(var(--primary) / 0.35);
+  }
+
+  /* White text with a theme-colored glowing outline, sitting outside the glyph (not overlapping the fill) */
+  .text-outline-glow {
+    color: #fff;
+    text-shadow:
+      -1.5px -1.5px 0 hsl(var(--accent) / 0.95),
+       1.5px -1.5px 0 hsl(var(--accent) / 0.95),
+      -1.5px  1.5px 0 hsl(var(--accent) / 0.95),
+       1.5px  1.5px 0 hsl(var(--accent) / 0.95),
+      -1.5px  0     0 hsl(var(--accent) / 0.95),
+       1.5px  0     0 hsl(var(--accent) / 0.95),
+       0     -1.5px 0 hsl(var(--accent) / 0.95),
+       0      1.5px 0 hsl(var(--accent) / 0.95),
+       0 0 14px hsl(var(--accent) / 0.6),
+       0 0 26px hsl(var(--accent) / 0.35);
+  }
+
+  /* Glassmorphism cards — soft lift + glow on hover */
+  .glass-card {
+    background: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.7);
+    transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s ease, border-color .3s ease, background-color .3s ease;
+  }
+  .glass-card:hover {
+    transform: translateY(-6px);
+    border-color: hsl(var(--primary) / .55);
+    box-shadow: 0 20px 45px -14px hsl(var(--primary) / .35), 0 0 26px 2px hsl(var(--primary) / .16);
+  }
+
+  /* Lift-only cards (e.g. image cards that keep their own visuals) — no bg override */
+  .card-lift {
+    transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s ease, border-color .3s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px);
+    border-color: hsl(var(--primary) / .55);
+    box-shadow: 0 20px 45px -14px hsl(var(--primary) / .35), 0 0 26px 2px hsl(var(--primary) / .16);
+  }
+
+  /* Ambient particle background — fixed, theme-colored, doesn't follow the mouse */
+  #particle-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+</style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+
+<canvas id="particle-bg"></canvas>
+<div id="app"></div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-5 right-5 z-[100] max-w-sm translate-y-4 opacity-0 pointer-events-none transition-all duration-300 rounded-xl border border-border bg-card p-4 shadow-2xl">
+  <div id="toast-title" class="font-semibold text-sm"></div>
+  <div id="toast-desc" class="mt-1 text-sm text-muted-foreground"></div>
+</div>
+
+<script>
+/* ============ AMBIENT PARTICLE BACKGROUND (fixed, theme-colored, no mouse tracking) ============ */
+(function () {
+  const canvas = document.getElementById('particle-bg');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+  let primaryHsl = '142 68% 40%';
+  let accentHsl = '112 65% 55%';
+
+  function readThemeColors() {
+    const style = getComputedStyle(document.documentElement);
+    primaryHsl = style.getPropertyValue('--primary').trim() || primaryHsl;
+    accentHsl = style.getPropertyValue('--accent').trim() || accentHsl;
+  }
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  function initParticles() {
+    const count = Math.min(80, Math.max(28, Math.round((w * h) / 24000)));
+    particles = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
+      r: Math.random() * 1.3 + 0.6,
+      accent: Math.random() < 0.22,
+    }));
+  }
+
+  let frame = 0;
+  function step() {
+    frame++;
+    if (frame % 20 === 0) readThemeColors(); // pick up live theme changes cheaply
+    ctx.clearRect(0, 0, w, h);
+
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+    }
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i], b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 130) {
+          ctx.strokeStyle = `hsl(${primaryHsl} / ${(0.18 * (1 - dist / 130)).toFixed(3)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.fillStyle = `hsl(${p.accent ? accentHsl : primaryHsl} / 0.7)`;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  readThemeColors();
+  resize();
+  initParticles();
+  requestAnimationFrame(step);
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+})();
+</script>
+
+<script>
+/* ============ DEFAULT CONTENT ============ */
+const DEFAULT_CONTENT = {
+  theme: 'redsheep',
+  brand: { name: 'Redsheep', accent: 'Studio' },
+  announcement: { enabled: true, text: 'เว็บไซต์กำลังปรับปรุง · สามารถติดต่อ Redsheep Studio เพื่อสอบถามงานได้ตามปกติ' },
+  nav: [
+    { label: 'บริการ', href: '#services' },
+    { label: 'ผลงาน', href: '#work' },
+    { label: 'ขั้นตอน', href: '#process' },
+    { label: 'ติดต่อ', href: '#contact' },
+  ],
+  hero: {
+    badge: 'รับงานตัดต่อวิดีโอทุกชนิด · เปิดรับคิว',
+    titleLine1: 'เปลี่ยนฟุตเทจธรรมดา',
+    titleLine2Pre: 'ให้เป็น',
+    titleGradient: 'คอนเทนต์ที่คนหยุดดู',
+    desc: 'บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ พร้อมทำให้แบรนด์ของคุณโดดเด่นในทุกฟีด',
+    img: 'https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png',
+    ctaPrimary: 'ปรึกษาฟรี / สั่งงาน',
+    ctaSecondary: 'ดูตัวอย่างผลงาน',
+    stats: [
+      { value: '300+', label: 'คลิปที่ส่งมอบ' },
+      { value: '50+', label: 'แบรนด์ที่ไว้ใจ' },
+      { value: '24 ชม.', label: 'ตอบกลับไว' },
+    ],
+  },
+  marquee: ['TikTok', 'YouTube', 'Facebook', 'Reels', 'Motion Graphic', 'Color Grading', 'โฆษณาสินค้า', 'Brand Film', 'ซับไตเติล'],
+  services: [
+    { icon: 'music-2', title: 'ตัดต่อคลิปสั้น TikTok / Reels', desc: 'คลิปแนวตั้งจังหวะเร็ว ใส่ซับ เอฟเฟกต์ และเพลงตามเทรนด์ ดึงยอดวิวให้ปัง' },
+    { icon: 'youtube', title: 'ตัดต่อวิดีโอ YouTube', desc: 'จัดโครงเรื่อง เกลี่ยเสียง ปรับสี ทำอินโทร/ทัมบ์เนล ให้คลิปน่าดูตั้งแต่วินาทีแรก' },
+    { icon: 'megaphone', title: 'สื่อโฆษณาออนไลน์', desc: 'วิดีโอโฆษณาสินค้าและบริการ พร้อมสคริปต์ที่กระตุ้นการตัดสินใจซื้อ' },
+    { icon: 'wand-2', title: 'Motion Graphic & อนิเมชัน', desc: 'กราฟิกเคลื่อนไหว โลโก้เปิด อินโฟกราฟิก ทำให้แบรนด์ดูมืออาชีพ' },
+    { icon: 'film', title: 'Corporate & Brand Film', desc: 'วิดีโอองค์กร สัมภาษณ์ พรีเซนต์แบรนด์ เล่าเรื่องอย่างมีระดับ' },
+    { icon: 'sparkles', title: 'ปรับสี & แต่งเสียง', desc: 'Color grading ระดับซีเนม่า มิกซ์เสียงให้ใส คมชัด ฟังสบาย' },
+  ],
+  portfolio: [
+    { img: 'https://images.hostinger.com/a3cba4d3-7765-4629-8d07-454a5b31faad.png', tag: 'TikTok', title: 'คลิปไวรัลครีเอเตอร์', orientation: 'vertical', link: '#' },
+    { img: 'https://images.hostinger.com/f16e7d9e-cdc5-4ae5-894e-4e2f39902af8.png', tag: 'YouTube', title: 'ทัมบ์เนล & ตัดต่อวล็อก', orientation: 'horizontal', link: '#' },
+    { img: 'https://images.hostinger.com/be688e38-ddde-4596-879f-0c9673536ee8.png', tag: 'โฆษณาสินค้า', title: 'สปอตโฆษณาสกินแคร์', orientation: 'vertical', link: '#' },
+    { img: 'https://images.hostinger.com/0295a5d8-aca6-42c3-8903-e7d87834f23b.png', tag: 'Facebook', title: 'วิดีโอโฆษณาร้านอาหาร', orientation: 'horizontal', link: '#' },
+    { img: 'https://images.hostinger.com/68f68174-4f93-4406-8901-62db0d113c26.png', tag: 'Brand Film', title: 'หนังสั้นแบรนด์คาเฟ่', orientation: 'horizontal', link: '#' },
+    { img: 'https://images.hostinger.com/e88499b6-f34b-493a-a9ac-ddecd37edca0.png', tag: 'Motion', title: 'โมชันกราฟิกเปิดแบรนด์', orientation: 'horizontal', link: '#' },
+  ],
+  steps: [
+    { n: '01', t: 'ปรึกษา & บรีฟงาน', d: 'บอกเป้าหมาย แพลตฟอร์ม และสไตล์ที่ต้องการ ฟรีไม่มีค่าใช้จ่าย' },
+    { n: '02', t: 'เสนอราคา & แผนงาน', d: 'สรุปขอบเขตงาน ราคา และไทม์ไลน์ที่ชัดเจน' },
+    { n: '03', t: 'ตัดต่อ & รีวิว', d: 'ลงมือผลิต พร้อมแก้ไขตามฟีดแบ็กจนกว่าจะพอใจ' },
+    { n: '04', t: 'ส่งมอบไฟล์', d: 'ส่งไฟล์ความละเอียดสูงพร้อมลงทุกแพลตฟอร์ม' },
+  ],
+  contact: {
+    phone: '08x-xxx-xxxx',
+    email: 'redsheepstudio29@gmail.com',
+    hours: 'ทุกวัน 09:00 – 21:00 น.',
+    bullets: ['แก้ไขงานได้สูงสุด 3 รอบ ตามขอบเขตบรีฟ', 'ส่งงานตรงเวลา 100%', 'ราคาชัดเจน ไม่มีบวกเพิ่มทีหลัง'],
+    socials: [
+      { icon: 'youtube', href: '#top' },
+      { icon: 'facebook', href: '#top' },
+      { icon: 'instagram', href: '#top' },
+      { icon: 'music-2', href: '#top' },
+    ],
+  },
+  footer: { text: 'Redsheep Studio · บริการตัดต่อวิดีโอ & สื่อโฆษณาออนไลน์' },
+};
+
+const STORAGE_KEY = 'redsheep_site_content_v2';
+
+/* ============ THEMES ============ */
+const THEMES = {
+  redsheep: {
+    name: 'แดง–ดำ Redsheep',
+    vars: {
+      background: '0 0% 4%', foreground: '0 0% 96%',
+      card: '0 0% 8%', 'card-foreground': '0 0% 96%',
+      primary: '355 78% 48%', 'primary-foreground': '0 0% 100%',
+      secondary: '0 0% 13%', 'secondary-foreground': '0 0% 96%',
+      muted: '0 0% 13%', 'muted-foreground': '0 0% 64%',
+      accent: '8 90% 60%', 'accent-foreground': '0 0% 8%',
+      border: '0 0% 18%', input: '0 0% 16%', ring: '355 82% 55%',
+      brand: '355 82% 52%', 'brand-2': '14 90% 60%',
+    },
+  },
+  cyberpunk: {
+    name: 'ม่วง Cyberpunk',
+    vars: {
+      background: '260 35% 6%', foreground: '280 15% 96%',
+      card: '260 25% 9%', 'card-foreground': '280 15% 96%',
+      primary: '275 70% 55%', 'primary-foreground': '0 0% 100%',
+      secondary: '260 16% 16%', 'secondary-foreground': '280 15% 96%',
+      muted: '260 16% 16%', 'muted-foreground': '260 8% 65%',
+      accent: '300 80% 65%', 'accent-foreground': '260 30% 8%',
+      border: '260 16% 20%', input: '260 16% 18%', ring: '275 70% 60%',
+      brand: '275 75% 55%', 'brand-2': '300 80% 65%',
+    },
+  },
+  green: {
+    name: 'เขียว',
+    vars: {
+      background: '150 30% 5%', foreground: '120 15% 96%',
+      card: '150 22% 8%', 'card-foreground': '120 15% 96%',
+      primary: '142 68% 40%', 'primary-foreground': '0 0% 100%',
+      secondary: '150 16% 14%', 'secondary-foreground': '120 15% 96%',
+      muted: '150 16% 14%', 'muted-foreground': '150 8% 62%',
+      accent: '112 65% 55%', 'accent-foreground': '150 30% 6%',
+      border: '150 16% 18%', input: '150 16% 16%', ring: '142 68% 45%',
+      brand: '142 76% 46%', 'brand-2': '100 72% 52%',
+    },
+  },
+  youtube: {
+    name: 'แดง-ดำ YouTube',
+    vars: {
+      background: '0 0% 5%', foreground: '0 0% 96%',
+      card: '0 0% 9%', 'card-foreground': '0 0% 96%',
+      primary: '0 72% 45%', 'primary-foreground': '0 0% 100%',
+      secondary: '0 0% 14%', 'secondary-foreground': '0 0% 96%',
+      muted: '0 0% 14%', 'muted-foreground': '0 0% 62%',
+      accent: '4 90% 62%', 'accent-foreground': '0 0% 8%',
+      border: '0 0% 18%', input: '0 0% 16%', ring: '0 72% 50%',
+      brand: '0 75% 48%', 'brand-2': '4 90% 62%',
+    },
+  },
+  facebook: {
+    name: 'น้ำเงิน-ขาว Facebook',
+    vars: {
+      background: '210 20% 97%', foreground: '220 20% 12%',
+      card: '0 0% 100%', 'card-foreground': '220 20% 12%',
+      primary: '221 70% 45%', 'primary-foreground': '0 0% 100%',
+      secondary: '210 20% 94%', 'secondary-foreground': '220 20% 12%',
+      muted: '210 20% 94%', 'muted-foreground': '220 10% 45%',
+      accent: '214 89% 60%', 'accent-foreground': '0 0% 100%',
+      border: '210 20% 88%', input: '210 20% 90%', ring: '214 89% 55%',
+      brand: '214 89% 52%', 'brand-2': '200 90% 65%',
+    },
+  },
+};
+const THEME_ORDER = ['redsheep', 'cyberpunk', 'green', 'youtube', 'facebook'];
+
+function applyTheme(themeId) {
+  const theme = THEMES[themeId] || THEMES.redsheep;
+  const root = document.documentElement;
+  Object.entries(theme.vars).forEach(([k, v]) => root.style.setProperty(`--${k}`, v));
+}
+
+function loadContent() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (!saved.announcement) saved.announcement = DEFAULT_CONTENT.announcement;
+      if (Array.isArray(saved.contact?.bullets)) {
+        saved.contact.bullets = saved.contact.bullets.map(t =>
+          t === 'แก้ไขงานฟรีจนกว่าจะพอใจ' ? 'แก้ไขงานได้สูงสุด 3 รอบ ตามขอบเขตบรีฟ' : t
+        );
+      }
+      return saved;
+    }
+  } catch (e) { console.warn('Could not load saved content, using defaults', e); }
+  return DEFAULT_CONTENT;
+}
+
+const CONTENT = loadContent();
+applyTheme(CONTENT.theme || 'redsheep');
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+
+const BRAND_ICONS = {
+  youtube: '<path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5v-7l6.3 3.5-6.3 3.5Z"/>',
+  facebook: '<path d="M14.5 8.5H17V5.1c-.4-.06-1.9-.2-3.6-.2-3.6 0-6 2.2-6 6.2v3.4H4v3.9h3.4V21h4V18.4h3.3l.5-3.9h-3.8v-3c0-1.1.3-1.9 2.1-1.9Z"/>',
+  instagram: '<path d="M12 3.2c2.7 0 3 0 4.1.06 1 .05 1.6.2 2 .35a3.4 3.4 0 0 1 1.9 1.9c.15.4.3 1 .35 2 .05 1.1.06 1.4.06 4.1s0 3-.06 4.1c-.05 1-.2 1.6-.35 2a3.4 3.4 0 0 1-1.9 1.9c-.4.15-1 .3-2 .35-1.1.05-1.4.06-4.1.06s-3 0-4.1-.06c-1-.05-1.6-.2-2-.35a3.4 3.4 0 0 1-1.9-1.9c-.15-.4-.3-1-.35-2C3.5 15 3.5 14.7 3.5 12s0-3 .06-4.1c.05-1 .2-1.6.35-2a3.4 3.4 0 0 1 1.9-1.9c.4-.15 1-.3 2-.35C8.97 3.2 9.27 3.2 12 3.2Zm0 1.6c-2.65 0-2.96 0-4 .06-.86.04-1.32.18-1.63.3a1.8 1.8 0 0 0-1 1c-.12.31-.26.77-.3 1.63C5 8.6 5 8.91 5 12s0 2.96.06 4c.04.86.18 1.32.3 1.63a1.8 1.8 0 0 0 1 1c.31.12.77.26 1.63.3 1.04.05 1.35.06 4 .06s2.96 0 4-.06c.86-.04 1.32-.18 1.63-.3a1.8 1.8 0 0 0 1-1c.12-.31.26-.77.3-1.63.05-1.04.06-1.35.06-4s0-2.96-.06-4c-.04-.86-.18-1.32-.3-1.63a1.8 1.8 0 0 0-1-1c-.31-.12-.77-.26-1.63-.3-1.04-.05-1.35-.06-4-.06Zm0 3.5a3.7 3.7 0 1 1 0 7.4 3.7 3.7 0 0 1 0-7.4Zm0 1.6a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2Zm4.7-1.8a.87.87 0 1 1 0 1.74.87.87 0 0 1 0-1.74Z"/>',
+};
+
+function resolveIcon(name, cls) {
+  if (BRAND_ICONS[name]) {
+    return `<svg viewBox="0 0 24 24" class="${cls}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${BRAND_ICONS[name]}</svg>`;
+  }
+  return `<i data-lucide="${esc(name)}" class="${cls}"></i>`;
+}
+
+function render(c) {
+  const year = new Date().getFullYear();
+  const announcement = c.announcement || DEFAULT_CONTENT.announcement;
+  const announcementHtml = announcement.enabled ? `
+    <div class="fixed top-16 inset-x-0 z-40 border-b border-primary/30 bg-primary/15 backdrop-blur-xl">
+      <div class="mx-auto max-w-[80rem] px-5 py-2.5 text-center text-sm font-medium text-foreground">
+        <i data-lucide="construction" class="mr-1.5 inline-block h-4 w-4 align-[-2px] text-accent"></i>${esc(announcement.text)}
+      </div>
+    </div>` : '';
+
+  const navHtml = c.nav.map(n => `<a href="${esc(n.href)}" data-nav="${esc(n.href)}" class="nav-link text-muted-foreground">${esc(n.label)}</a>`).join('');
+
+  const statsHtml = c.hero.stats.map(s => `
+    <div>
+      <div class="font-display text-3xl font-bold text-gradient">${esc(s.value)}</div>
+      <div class="text-sm text-muted-foreground">${esc(s.label)}</div>
+    </div>`).join('');
+
+  const marqueeArr = [...c.marquee, ...c.marquee];
+  const marqueeHtml = marqueeArr.map(m => `
+    <span class="mx-6 inline-flex items-center gap-3 font-display text-xl font-semibold text-muted-foreground/70">
+      ${esc(m)} <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+    </span>`).join('');
+
+  const servicesHtml = c.services.map(s => `
+    <div class="reveal group glass-card rounded-2xl p-7">
+      <div class="grid place-items-center h-12 w-12 rounded-xl bg-primary/15 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition">
+        ${resolveIcon(s.icon, 'h-6 w-6')}
+      </div>
+      <h3 class="mt-5 font-display text-xl font-bold">${esc(s.title)}</h3>
+      <p class="mt-2 text-muted-foreground leading-relaxed">${esc(s.desc)}</p>
+    </div>`).join('');
+
+  function portfolioCard(p, aspectClass) {
+    return `
+    <a href="${esc(p.link || '#')}" target="_blank" rel="noopener noreferrer" class="reveal group card-lift block relative overflow-hidden rounded-2xl border border-border cursor-pointer ${aspectClass}">
+      <img src="${esc(p.img)}" alt="${esc(p.title)}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
+      <div class="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
+      <div class="absolute left-4 top-4">
+        <span class="rounded-full bg-background/70 backdrop-blur px-3 py-1 text-xs font-semibold text-foreground border border-border">${esc(p.tag)}</span>
+      </div>
+      <div class="absolute inset-x-4 bottom-4 flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg pr-2">${esc(p.title)}</h3>
+        <span class="grid place-items-center h-9 w-9 rounded-full bg-primary text-primary-foreground opacity-0 group-hover:opacity-100 transition">
+          <i data-lucide="play" class="h-4 w-4 ml-0.5" fill="currentColor"></i>
+        </span>
+      </div>
+    </a>`;
+  }
+  const verticalPortfolio = c.portfolio.filter(p => p.orientation !== 'horizontal');
+  const horizontalPortfolio = c.portfolio.filter(p => p.orientation === 'horizontal');
+  const verticalPortfolioHtml = verticalPortfolio.map(p => portfolioCard(p, 'aspect-[9/16]')).join('');
+  const horizontalPortfolioHtml = horizontalPortfolio.map(p => portfolioCard(p, 'aspect-video')).join('');
+
+  const stepsHtml = c.steps.map(s => `
+    <div class="relative glass-card rounded-2xl p-7">
+      <div class="font-display text-5xl font-bold text-gradient">${esc(s.n)}</div>
+      <h3 class="mt-4 font-display text-lg font-bold">${esc(s.t)}</h3>
+      <p class="mt-2 text-sm text-muted-foreground leading-relaxed">${esc(s.d)}</p>
+    </div>`).join('');
+
+  const contactItems = [
+    { icon: 'phone', label: 'โทร / LINE', value: c.contact.phone },
+    { icon: 'mail', label: 'อีเมล', value: c.contact.email },
+    { icon: 'message-circle', label: 'เวลาทำการ', value: c.contact.hours },
+  ];
+  const contactItemsHtml = contactItems.map(ci => `
+    <div class="flex items-center gap-4">
+      <div class="grid place-items-center h-11 w-11 rounded-xl bg-primary/15 text-primary shrink-0">
+        <i data-lucide="${esc(ci.icon)}" class="h-5 w-5"></i>
+      </div>
+      <div>
+        <div class="text-sm text-muted-foreground">${esc(ci.label)}</div>
+        <div class="font-semibold">${esc(ci.value)}</div>
+      </div>
+    </div>`).join('');
+
+  const socialsHtml = c.contact.socials.map(s => `
+    <a href="${esc(s.href)}" class="icon-btn grid place-items-center h-11 w-11 rounded-xl border border-border bg-card hover:bg-primary hover:text-primary-foreground transition">
+      ${resolveIcon(s.icon, 'h-5 w-5')}
+    </a>`).join('');
+
+  const bulletsHtml = c.contact.bullets.map(t => `
+    <li class="flex items-center gap-2.5 text-sm text-muted-foreground">
+      <i data-lucide="check" class="h-4 w-4 text-accent shrink-0"></i> ${esc(t)}
+    </li>`).join('');
+
+  const platformOptions = ['TikTok', 'YouTube', 'Facebook', 'Instagram Reels', 'โฆษณาสินค้า', 'อื่น ๆ']
+    .map(o => `<option>${esc(o)}</option>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    <!-- Nav -->
+    <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/60">
+      <div class="mx-auto max-w-[80rem] px-5 h-16 flex items-center justify-between">
+        <a href="#top" class="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+          <span class="grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-accent text-white">
+            <i data-lucide="clapperboard" class="h-4 w-4" stroke-width="2.5"></i>
+          </span>
+          ${esc(c.brand.name)}<span class="text-gradient">${esc(c.brand.accent)}</span>
+        </a>
+        <nav id="main-nav" class="relative hidden md:flex items-center gap-1 text-sm text-muted-foreground">
+          <div id="nav-active-bg" class="menu-active-indicator"></div>
+          <div id="nav-hover-bg" class="hover-glide"></div>
+          ${navHtml}
+        </nav>
+        <a href="#contact" class="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 active:scale-95 transition">
+          สั่งงาน <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+        </a>
+      </div>
+    </header>
+
+    ${announcementHtml}
+
+    <!-- Hero -->
+    <section id="top" class="relative min-h-[100dvh] flex items-center overflow-hidden ${announcement.enabled ? 'pt-28' : 'pt-16'}">
+      <img src="${esc(c.hero.img)}" alt="สตูดิโอตัดต่อวิดีโอ" class="absolute inset-0 h-full w-full object-cover opacity-40">
+      <div class="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-background/40"></div>
+      <div class="absolute -top-40 -right-40 h-[30rem] w-[30rem] rounded-full bg-primary/25 blur-[120px]"></div>
+      <div class="absolute bottom-0 -left-40 h-[26rem] w-[26rem] rounded-full bg-accent/20 blur-[120px]"></div>
+
+      <div class="relative mx-auto max-w-[80rem] px-5 w-full">
+        <div class="hero-fade-in max-w-3xl">
+          <span class="hero-badge inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
+            <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span> <span class="badge-text">${esc(c.hero.badge)}</span>
+          </span>
+          <h1 class="mt-6 font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
+            ${esc(c.hero.titleLine1)}<span class="block mt-2"><span class="text-outline-glow">${esc(c.hero.titleLine2Pre)}</span><span class="text-gradient">${esc(c.hero.titleGradient)}</span></span>
+          </h1>
+          <p class="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed">${esc(c.hero.desc)}</p>
+          <div class="mt-9 flex flex-wrap items-center gap-4">
+            <a href="#contact" class="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-semibold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90 active:scale-95 transition">
+              <i data-lucide="phone" class="h-4 w-4"></i> ${esc(c.hero.ctaPrimary)}
+            </a>
+            <a href="#work" class="btn-glow-secondary inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-7 py-3.5 font-semibold hover:bg-card transition backdrop-blur">
+              <i data-lucide="play" class="h-4 w-4"></i> ${esc(c.hero.ctaSecondary)}
+            </a>
+          </div>
+          <div class="mt-12 flex flex-wrap gap-x-10 gap-y-4">${statsHtml}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="border-y border-border bg-card/40 py-4 overflow-hidden">
+      <div class="flex w-max animate-marquee">${marqueeHtml}</div>
+    </div>
+
+    <!-- Services -->
+    <section id="services" class="mx-auto max-w-[80rem] px-5 py-24">
+      <div class="max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-widest text-accent">บริการของเรา</p>
+        <h2 class="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight">ครบทุกงานวิดีโอ ในที่เดียว</h2>
+        <p class="mt-4 text-muted-foreground text-lg">ไม่ว่าจะคลิปสั้น คลิปยาว หรือโฆษณา เราดูแลให้ตั้งแต่ต้นจนจบ</p>
+      </div>
+      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">${servicesHtml}</div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="work" class="mx-auto max-w-[80rem] px-5 py-24">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="max-w-2xl">
+          <p class="text-sm font-semibold uppercase tracking-widest text-accent">ผลงานที่ผ่านมา</p>
+          <h2 class="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight">ตัวอย่างงานที่เราภูมิใจ</h2>
+        </div>
+        <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:gap-2.5 transition-all">
+          อยากได้แบบนี้บ้าง <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+        </a>
+      </div>
+      <div class="mt-12 space-y-14">
+        ${verticalPortfolio.length ? `
+        <div>
+          <h3 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+            <i data-lucide="smartphone" class="h-4 w-4"></i> แนวตั้ง 9:16 · TikTok / Reels / Shorts
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">${verticalPortfolioHtml}</div>
+        </div>` : ''}
+        ${horizontalPortfolio.length ? `
+        <div>
+          <h3 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+            <i data-lucide="monitor-play" class="h-4 w-4"></i> แนวนอน 16:9 · YouTube / Facebook / Brand Film
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">${horizontalPortfolioHtml}</div>
+        </div>` : ''}
+      </div>
+    </section>
+
+    <!-- Process -->
+    <section id="process" class="border-y border-border bg-card/40">
+      <div class="mx-auto max-w-[80rem] px-5 py-24">
+        <div class="max-w-2xl">
+          <p class="text-sm font-semibold uppercase tracking-widest text-accent">ขั้นตอนการทำงาน</p>
+          <h2 class="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight">ง่าย โปร่งใส ทุกขั้นตอน</h2>
+        </div>
+        <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">${stepsHtml}</div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="mx-auto max-w-[80rem] px-5 py-24">
+      <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-accent">ติดต่อสั่งงาน</p>
+          <h2 class="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
+            พร้อมทำให้คอนเทนต์<br>ของคุณ<span class="text-gradient">ปังกว่าเดิม</span>
+          </h2>
+          <p class="mt-5 text-muted-foreground text-lg leading-relaxed">บอกเราสั้น ๆ ว่าอยากได้งานแบบไหน แล้วเราจะติดต่อกลับพร้อมใบเสนอราคาภายใน 24 ชั่วโมง</p>
+          <div class="mt-8 space-y-4">${contactItemsHtml}</div>
+          <div class="mt-8 flex gap-3">${socialsHtml}</div>
+          <ul class="mt-8 space-y-2">${bulletsHtml}</ul>
+        </div>
+
+        <form id="contact-form" class="glass-card rounded-2xl p-7 sm:p-9">
+          <div class="grid gap-5">
+            <div class="grid gap-2">
+              <label class="text-sm font-medium" for="name">ชื่อ / แบรนด์</label>
+              <input id="name" name="name" class="rounded-xl border border-input bg-background px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition" placeholder="เช่น คาเฟ่ริมคลอง">
+            </div>
+            <div class="grid gap-2">
+              <label class="text-sm font-medium" for="contact-value">ช่องทางติดต่อกลับ (โทร / LINE / อีเมล)</label>
+              <input id="contact-value" name="contact" class="rounded-xl border border-input bg-background px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition" placeholder="08x-xxx-xxxx">
+            </div>
+            <div class="grid gap-2">
+              <label class="text-sm font-medium" for="platform">แพลตฟอร์มหลัก</label>
+              <select id="platform" name="platform" class="rounded-xl border border-input bg-background px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition">${platformOptions}</select>
+            </div>
+            <div class="grid gap-2">
+              <label class="text-sm font-medium" for="detail">รายละเอียดงาน</label>
+              <textarea id="detail" name="detail" rows="4" class="rounded-xl border border-input bg-background px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition resize-none" placeholder="เล่าคร่าว ๆ ว่าอยากได้งานแบบไหน ความยาว จำนวนคลิป ฯลฯ"></textarea>
+            </div>
+            <button type="submit" class="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-semibold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90 active:scale-[0.98] transition">
+              ส่งคำขอสั่งงาน <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-border">
+      <div class="mx-auto max-w-[80rem] px-5 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2 font-display font-bold">
+          <span class="grid place-items-center h-7 w-7 rounded-lg bg-gradient-to-br from-primary to-accent text-white">
+            <i data-lucide="clapperboard" class="h-3.5 w-3.5" stroke-width="2.5"></i>
+          </span>
+          ${esc(c.brand.name)} ${esc(c.brand.accent)}
+        </div>
+        <p class="text-sm text-muted-foreground">© ${year} ${esc(c.footer.text)}</p>
+      </div>
+    </footer>
+  `;
+
+  // Icons
+  if (window.lucide) lucide.createIcons();
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if (window.IntersectionObserver) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '-40px' });
+    revealEls.forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i % 6, 6) * 60}ms`;
+      io.observe(el);
+    });
+  } else {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  }
+
+  // Nav menu indicators — shared "move to element" helper for both hover-glide and the active pill
+  const navEl = document.getElementById('main-nav');
+  const navHoverBg = document.getElementById('nav-hover-bg');
+  const navActiveBg = document.getElementById('nav-active-bg');
+  function moveNavIndicatorTo(indicator, el) {
+    if (!navEl || !indicator || !el) return;
+    const navRect = navEl.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    indicator.style.width = `${elRect.width}px`;
+    indicator.style.height = `${elRect.height}px`;
+    indicator.style.transform = `translate(${elRect.left - navRect.left}px, ${elRect.top - navRect.top}px)`;
+    indicator.style.opacity = '1';
+  }
+  if (navEl && navHoverBg) {
+    navEl.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('mouseenter', () => moveNavIndicatorTo(navHoverBg, link));
+    });
+    navEl.addEventListener('mouseleave', () => { navHoverBg.style.opacity = '0'; });
+  }
+  window.addEventListener('resize', () => {
+    const activeLink = navEl && navEl.querySelector('.nav-link.active');
+    if (activeLink) moveNavIndicatorTo(navActiveBg, activeLink);
+  });
+
+  // Scrollspy — highlight nav link for the section in view + glide the active pill to it
+  const navLinks = document.querySelectorAll('.nav-link');
+  if (window.IntersectionObserver && navLinks.length) {
+    const spySections = [...navLinks]
+      .map(a => document.querySelector(a.getAttribute('href')))
+      .filter(Boolean);
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const href = '#' + entry.target.id;
+        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === href));
+        const activeLink = navEl && navEl.querySelector('.nav-link.active');
+        if (activeLink) moveNavIndicatorTo(navActiveBg, activeLink);
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    spySections.forEach(s => spy.observe(s));
+  }
+
+  // Toast helper
+  function showToast(title, desc, variant) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-desc').textContent = desc;
+    toast.className = `fixed bottom-5 right-5 z-[100] max-w-sm rounded-xl border p-4 shadow-2xl transition-all duration-300 ${variant === 'destructive' ? 'bg-destructive/10 border-destructive text-destructive-foreground' : 'bg-card border-border'}`;
+    requestAnimationFrame(() => {
+      toast.classList.remove('translate-y-4', 'opacity-0', 'pointer-events-none');
+    });
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => {
+      toast.classList.add('translate-y-4', 'opacity-0', 'pointer-events-none');
+    }, 4000);
+  }
+
+  // Contact form
+  const form = document.getElementById('contact-form');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = data.get('name')?.trim();
+    const contact = data.get('contact')?.trim();
+    const platform = data.get('platform');
+    const detail = data.get('detail')?.trim();
+    if (!name || !contact) {
+      showToast('กรอกข้อมูลไม่ครบ', 'กรุณาระบุชื่อและช่องทางติดต่อกลับ', 'destructive');
+      return;
+    }
+    const body = encodeURIComponent(`ชื่อ: ${name}\nช่องทางติดต่อ: ${contact}\nแพลตฟอร์ม: ${platform}\nรายละเอียดงาน: ${detail}`);
+    window.location.href = `mailto:${c.contact.email}?subject=${encodeURIComponent('สอบถามงานตัดต่อวิดีโอ')}&body=${body}`;
+    showToast('ส่งคำขอเรียบร้อย', 'เรากำลังเปิดอีเมลของคุณ จะติดต่อกลับโดยเร็วที่สุด');
+    form.reset();
+  });
+}
+
+render(CONTENT);
+
+// Live-update if admin edits in another tab of the same browser
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY) {
+    const updated = loadContent();
+    applyTheme(updated.theme || 'redsheep');
+    render(updated);
+  }
+});
+</script>
+</body>
+</html>
