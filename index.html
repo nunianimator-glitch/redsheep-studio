@@ -4,31 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- SEO:START -->
-<title id="seo-title">Redsheep Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook</title>
+<title id="seo-title">FrameCut Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook</title>
 <meta id="seo-description" name="description" content="บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ">
 <meta id="seo-keywords" name="keywords" content="รับตัดต่อวิดีโอ, ตัดต่อ TikTok, ตัดต่อ YouTube, สื่อโฆษณาออนไลน์, Motion Graphic, Color Grading">
-<link id="seo-canonical" rel="canonical" href="https://bit.ly/redsheep/">
+<link id="seo-canonical" rel="canonical" href="https://example.com/">
 <meta id="seo-og-type" property="og:type" content="website">
-<meta id="seo-og-site-name" property="og:site_name" content="RedsheepStudio">
-<meta id="seo-og-title" property="og:title" content="Redsheep Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook">
+<meta id="seo-og-site-name" property="og:site_name" content="FrameCut Studio">
+<meta id="seo-og-title" property="og:title" content="FrameCut Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook">
 <meta id="seo-og-description" property="og:description" content="บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ">
 <meta id="seo-og-image" property="og:image" content="https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png">
-<meta id="seo-og-url" property="og:url" content="https://bit.ly/redsheep/">
+<meta id="seo-og-url" property="og:url" content="https://example.com/">
 <meta id="seo-og-locale" property="og:locale" content="th_TH">
 <meta id="seo-twitter-card" name="twitter:card" content="summary_large_image">
-<meta id="seo-twitter-title" name="twitter:title" content="Redsheep Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook">
+<meta id="seo-twitter-title" name="twitter:title" content="FrameCut Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook">
 <meta id="seo-twitter-description" name="twitter:description" content="บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ">
 <meta id="seo-twitter-image" name="twitter:image" content="https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png">
 <script id="seo-jsonld" type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "name": "RedsheepStudio",
+  "name": "FrameCut Studio",
   "description": "บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ",
   "image": "https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png",
-  "url": "https://bit.ly/redsheep/",
-  "telephone": "093-324-5233",
-  "email": "redsheepstudio29@gmail.com"
+  "url": "https://example.com/",
+  "telephone": "08x-xxx-xxxx",
+  "email": "hello@framecut.studio"
 }
 </script>
 <!-- SEO:END -->
@@ -92,7 +92,7 @@
     --muted-foreground: 150 8% 62%;
     --accent: 112 65% 55%;
     --accent-foreground: 150 30% 6%;
-    --border: 150 16% 18%;
+    --border: 150 18% 24%;
     --input: 150 16% 16%;
     --ring: 142 68% 45%;
     --radius: 0.9rem;
@@ -194,7 +194,8 @@
     background: hsl(var(--card) / 0.55);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.7);
+    border: 1px solid hsl(var(--border) / 1);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.04);
     transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s ease, border-color .3s ease, background-color .3s ease;
   }
   .glass-card:hover {
@@ -212,6 +213,12 @@
     border-color: hsl(var(--primary) / .55);
     box-shadow: 0 20px 45px -14px hsl(var(--primary) / .35), 0 0 26px 2px hsl(var(--primary) / .16);
   }
+
+  /* Horizontal carousel tracks — arrows handle navigation, no native scrollbar clutter */
+  .scroll-clean { scrollbar-width: none; -ms-overflow-style: none; cursor: grab; }
+  .scroll-clean::-webkit-scrollbar { display: none; }
+  .scroll-clean.dragging { cursor: grabbing; scroll-snap-type: none; }
+  .scroll-clean.dragging > * { pointer-events: none; }
 
   /* Ambient particle background — fixed, theme-colored, doesn't follow the mouse */
   #particle-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
@@ -311,318 +318,113 @@
 <script>
 /* ============ DEFAULT CONTENT ============ */
 const DEFAULT_CONTENT = {
-  "theme": "youtube",
-  "brand": {
-    "name": "Redsheep",
-    "accent": "Studio"
+  theme: 'green',
+  brand: { name: 'FrameCut', accent: 'Studio' },
+  nav: [
+    { label: 'บริการ', href: '#services' },
+    { label: 'ผลงาน', href: '#work' },
+    { label: 'ประสบการณ์ทำงาน', href: '#experience' },
+    { label: 'ทักษะ/ความสามารถ', href: '#skills' },
+    { label: 'ขั้นตอน', href: '#process' },
+    { label: 'ติดต่อ', href: '#contact' },
+  ],
+  sections: {
+    services: true,
+    work: true,
+    experience: true,
+    skills: true,
+    process: true,
+    contact: true,
   },
-  "nav": [
-    {
-      "label": "บริการ",
-      "href": "#services"
-    },
-    {
-      "label": "ผลงาน",
-      "href": "#work"
-    },
-    {
-      "label": "ประสบการณ์ทำงาน",
-      "href": "#experience"
-    },
-    {
-      "label": "ทักษะความสามารถ",
-      "href": "#skills"
-    },
-    {
-      "label": "ขั้นตอน",
-      "href": "#process"
-    },
-    {
-      "label": "ติดต่อ",
-      "href": "#contact"
-    }
-  ],
-  "sections": {
-    "services": true,
-    "work": true,
-    "experience": true,
-    "skills": true,
-    "process": true,
-    "contact": true
-  },
-  "hero": {
-    "badge": "รับงานตัดต่อวิดีโอทุกชนิด · เปิดรับคิว",
-    "titleLine1": "เปลี่ยนไอเดียของคุณ",
-    "titleLine2Pre": "ให้เป็น",
-    "titleGradient": "คอนเทนต์ที่คนหยุดดู",
-    "desc": "บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ พร้อมทำให้แบรนด์ของคุณโดดเด่นในทุกฟีด",
-    "img": "https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png",
-    "ctaPrimary": "ปรึกษาฟรี / สั่งงาน",
-    "ctaSecondary": "ดูตัวอย่างผลงาน",
-    "stats": [
-      {
-        "value": "300+",
-        "label": "คลิปที่ส่งมอบ"
-      },
-      {
-        "value": "50+",
-        "label": "แบรนด์ที่ไว้ใจ"
-      },
-      {
-        "value": "24 ชม.",
-        "label": "ตอบกลับไว"
-      }
-    ]
-  },
-  "marquee": [
-    "TikTok",
-    "YouTube",
-    "Facebook",
-    "Reels",
-    "Motion Graphic",
-    "Color Grading",
-    "โฆษณาสินค้า",
-    "Brand Film",
-    "ซับไตเติล"
-  ],
-  "services": [
-    {
-      "icon": "music-2",
-      "title": "ตัดต่อคลิปสั้น TikTok / Reels / Shorts",
-      "desc": "คลิปแนวตั้งจังหวะเร็ว ใส่ซับ เอฟเฟกต์ และเพลงตามเทรนด์ ดึงยอดวิวให้ปัง"
-    },
-    {
-      "icon": "youtube",
-      "title": "ตัดต่อวิดีโอ YouTube",
-      "desc": "จัดโครงเรื่อง เกลี่ยเสียง ปรับสี ทำอินโทร/ทัมบ์เนล ให้คลิปน่าดูตั้งแต่วินาทีแรก"
-    },
-    {
-      "icon": "megaphone",
-      "title": "สื่อโฆษณาออนไลน์",
-      "desc": "วิดีโอโฆษณาสินค้าและบริการ พร้อมสคริปต์ที่กระตุ้นการตัดสินใจซื้อ"
-    },
-    {
-      "icon": "wand-2",
-      "title": "Motion Graphic & อนิเมชัน",
-      "desc": "กราฟิกเคลื่อนไหว โลโก้เปิด อินโฟกราฟิก ทำให้แบรนด์ดูมืออาชีพ"
-    },
-    {
-      "icon": "film",
-      "title": "Corporate & Brand Film",
-      "desc": "วิดีโอองค์กร สัมภาษณ์ พรีเซนต์แบรนด์ เล่าเรื่องอย่างมีระดับ"
-    },
-    {
-      "icon": "sparkles",
-      "title": "ปรับสี & แต่งเสียง",
-      "desc": "Color grading ระดับซีเนม่า มิกซ์เสียงให้ใส คมชัด ฟังสบาย"
-    }
-  ],
-  "portfolio": [
-    {
-      "img": "https://images.hostinger.com/a3cba4d3-7765-4629-8d07-454a5b31faad.png",
-      "tag": "TikTok",
-      "title": "คลิปไวรัลครีเอเตอร์",
-      "tall": true,
-      "link": "#"
-    },
-    {
-      "img": "https://images.hostinger.com/f16e7d9e-cdc5-4ae5-894e-4e2f39902af8.png",
-      "tag": "YouTube",
-      "title": "ทัมบ์เนล & ตัดต่อวล็อก",
-      "tall": false,
-      "link": "#"
-    },
-    {
-      "img": "https://images.hostinger.com/be688e38-ddde-4596-879f-0c9673536ee8.png",
-      "tag": "โฆษณาสินค้า",
-      "title": "สปอตโฆษณาสกินแคร์",
-      "tall": false,
-      "link": "#"
-    },
-    {
-      "img": "https://images.hostinger.com/0295a5d8-aca6-42c3-8903-e7d87834f23b.png",
-      "tag": "Facebook",
-      "title": "วิดีโอโฆษณาร้านอาหาร",
-      "tall": false,
-      "link": "#"
-    },
-    {
-      "img": "https://images.hostinger.com/68f68174-4f93-4406-8901-62db0d113c26.png",
-      "tag": "Brand Film",
-      "title": "หนังสั้นแบรนด์คาเฟ่",
-      "tall": false,
-      "link": "#"
-    },
-    {
-      "img": "https://images.hostinger.com/e88499b6-f34b-493a-a9ac-ddecd37edca0.png",
-      "tag": "Motion",
-      "title": "โมชันกราฟิกเปิดแบรนด์",
-      "tall": false,
-      "link": "#"
-    }
-  ],
-  "steps": [
-    {
-      "n": "01",
-      "t": "ปรึกษา & บรีฟงาน",
-      "d": "บอกเป้าหมาย แพลตฟอร์ม และสไตล์ที่ต้องการ ฟรีไม่มีค่าใช้จ่าย"
-    },
-    {
-      "n": "02",
-      "t": "เสนอราคา & แผนงาน",
-      "d": "สรุปขอบเขตงาน ราคา และไทม์ไลน์ที่ชัดเจน"
-    },
-    {
-      "n": "03",
-      "t": "ตัดต่อ & รีวิว",
-      "d": "ลงมือผลิต พร้อมแก้ไขตามฟีดแบ็กจนกว่าจะพอใจ"
-    },
-    {
-      "n": "04",
-      "t": "ส่งมอบไฟล์",
-      "d": "ส่งไฟล์ความละเอียดสูงพร้อมลงทุกแพลตฟอร์ม"
-    }
-  ],
-  "contact": {
-    "phone": "093-324-5233",
-    "email": "redsheepstudio29@gmail.com",
-    "hours": "ทุกวัน 09:00 – 21:00 น.",
-    "web3formsKey": "b0e57da3-3910-4df4-a62f-0fff69b341de",
-    "bullets": [
-      "แก้ไขงานฟรีจนกว่าจะพอใจ",
-      "ส่งงานตรงเวลา 100%",
-      "ราคาชัดเจน ไม่มีบวกเพิ่มทีหลัง"
+  hero: {
+    badge: 'รับงานตัดต่อวิดีโอทุกชนิด · เปิดรับคิว',
+    titleLine1: 'เปลี่ยนฟุตเทจธรรมดา',
+    titleLine2Pre: 'ให้เป็น',
+    titleGradient: 'คอนเทนต์ที่คนหยุดดู',
+    desc: 'บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ พร้อมทำให้แบรนด์ของคุณโดดเด่นในทุกฟีด',
+    img: 'https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png',
+    ctaPrimary: 'ปรึกษาฟรี / สั่งงาน',
+    ctaSecondary: 'ดูตัวอย่างผลงาน',
+    stats: [
+      { value: '300+', label: 'คลิปที่ส่งมอบ' },
+      { value: '50+', label: 'แบรนด์ที่ไว้ใจ' },
+      { value: '24 ชม.', label: 'ตอบกลับไว' },
     ],
-    "socials": [
-      {
-        "icon": "youtube",
-        "href": "#top"
-      },
-      {
-        "icon": "facebook",
-        "href": "#top"
-      },
-      {
-        "icon": "instagram",
-        "href": "#top"
-      },
-      {
-        "icon": "music-2",
-        "href": "#top"
-      }
-    ]
   },
-  "footer": {
-    "text": "Redsheep Studio · บริการตัดต่อวิดีโอ & สื่อโฆษณาออนไลน์"
+  marquee: ['TikTok', 'YouTube', 'Facebook', 'Reels', 'Motion Graphic', 'Color Grading', 'โฆษณาสินค้า', 'Brand Film', 'ซับไตเติล'],
+  services: [
+    { icon: 'music-2', title: 'ตัดต่อคลิปสั้น TikTok / Reels', desc: 'คลิปแนวตั้งจังหวะเร็ว ใส่ซับ เอฟเฟกต์ และเพลงตามเทรนด์ ดึงยอดวิวให้ปัง' },
+    { icon: 'youtube', title: 'ตัดต่อวิดีโอ YouTube', desc: 'จัดโครงเรื่อง เกลี่ยเสียง ปรับสี ทำอินโทร/ทัมบ์เนล ให้คลิปน่าดูตั้งแต่วินาทีแรก' },
+    { icon: 'megaphone', title: 'สื่อโฆษณาออนไลน์', desc: 'วิดีโอโฆษณาสินค้าและบริการ พร้อมสคริปต์ที่กระตุ้นการตัดสินใจซื้อ' },
+    { icon: 'wand-2', title: 'Motion Graphic & อนิเมชัน', desc: 'กราฟิกเคลื่อนไหว โลโก้เปิด อินโฟกราฟิก ทำให้แบรนด์ดูมืออาชีพ' },
+    { icon: 'film', title: 'Corporate & Brand Film', desc: 'วิดีโอองค์กร สัมภาษณ์ พรีเซนต์แบรนด์ เล่าเรื่องอย่างมีระดับ' },
+    { icon: 'sparkles', title: 'ปรับสี & แต่งเสียง', desc: 'Color grading ระดับซีเนม่า มิกซ์เสียงให้ใส คมชัด ฟังสบาย' },
+  ],
+  portfolio: [
+    { img: 'https://images.hostinger.com/a3cba4d3-7765-4629-8d07-454a5b31faad.png', tag: 'TikTok', title: 'คลิปไวรัลครีเอเตอร์', orientation: 'vertical', link: '#' },
+    { img: 'https://images.hostinger.com/f16e7d9e-cdc5-4ae5-894e-4e2f39902af8.png', tag: 'YouTube', title: 'ทัมบ์เนล & ตัดต่อวล็อก', orientation: 'horizontal', link: '#' },
+    { img: 'https://images.hostinger.com/be688e38-ddde-4596-879f-0c9673536ee8.png', tag: 'โฆษณาสินค้า', title: 'สปอตโฆษณาสกินแคร์', orientation: 'vertical', link: '#' },
+    { img: 'https://images.hostinger.com/0295a5d8-aca6-42c3-8903-e7d87834f23b.png', tag: 'Facebook', title: 'วิดีโอโฆษณาร้านอาหาร', orientation: 'horizontal', link: '#' },
+    { img: 'https://images.hostinger.com/68f68174-4f93-4406-8901-62db0d113c26.png', tag: 'Brand Film', title: 'หนังสั้นแบรนด์คาเฟ่', orientation: 'horizontal', link: '#' },
+    { img: 'https://images.hostinger.com/e88499b6-f34b-493a-a9ac-ddecd37edca0.png', tag: 'Motion', title: 'โมชันกราฟิกเปิดแบรนด์', orientation: 'horizontal', link: '#' },
+  ],
+  steps: [
+    { n: '01', t: 'ปรึกษา & บรีฟงาน', d: 'บอกเป้าหมาย แพลตฟอร์ม และสไตล์ที่ต้องการ ฟรีไม่มีค่าใช้จ่าย' },
+    { n: '02', t: 'เสนอราคา & แผนงาน', d: 'สรุปขอบเขตงาน ราคา และไทม์ไลน์ที่ชัดเจน' },
+    { n: '03', t: 'ตัดต่อ & รีวิว', d: 'ลงมือผลิต พร้อมแก้ไขตามฟีดแบ็กจนกว่าจะพอใจ' },
+    { n: '04', t: 'ส่งมอบไฟล์', d: 'ส่งไฟล์ความละเอียดสูงพร้อมลงทุกแพลตฟอร์ม' },
+  ],
+  contact: {
+    phone: '08x-xxx-xxxx',
+    email: 'hello@framecut.studio',
+    hours: 'ทุกวัน 09:00 – 21:00 น.',
+    web3formsKey: '',
+    bullets: ['แก้ไขงานฟรีจนกว่าจะพอใจ', 'ส่งงานตรงเวลา 100%', 'ราคาชัดเจน ไม่มีบวกเพิ่มทีหลัง'],
+    socials: [
+      { icon: 'youtube', href: '#top' },
+      { icon: 'facebook', href: '#top' },
+      { icon: 'instagram', href: '#top' },
+      { icon: 'music-2', href: '#top' },
+    ],
   },
-  "experience": {
-    "title": "Professional Experience.",
-    "items": [
+  footer: { text: 'FrameCut Studio · บริการตัดต่อวิดีโอ & สื่อโฆษณาออนไลน์' },
+  experience: {
+    title: 'Professional Experience.',
+    items: [
       {
-        "dateRange": "July 2025 – June 2026",
-        "position": "Creative Team Lead",
-        "company": "Satapon Construction Group",
-        "paragraphs": [
-          "Directed creative strategy and multimedia production for a leading residential construction group. Oversaw content planning, production workflows, creative teams and final delivery across multiple digital platforms, while specializing in video editing, motion graphics and AI-powered content creation."
-        ]
+        dateRange: 'July 2025 – June 2026',
+        position: 'Creative Team Lead',
+        company: 'Satapon Construction Group',
+        paragraphs: [
+          'Led end-to-end content planning, creative production and post-production for a residential construction group across four Facebook pages, two TikTok channels, YouTube, Instagram and LINE Official Account.',
+          'Managed monthly editorial plans, on-site production, team assignments, asset handoffs, quality review, publishing workflows and KPI reporting. Coordinated in-house and outsourced creatives across video, motion graphics, photography, drone, graphic design and 3D media, while remaining hands-on in video editing, motion graphics and final delivery.',
+          'Developed AI-assisted workflows for concept development, architectural image enhancement, previsualization and image-to-video production.',
+        ],
       },
-      {
-        "dateRange": "October 2023 – April 2025 ",
-        "position": "3D Animator & Post-Production Artist · Remote",
-        "company": "Jaedyn VFX",
-        "paragraphs": [
-          "Served as the sole remote 3D Animator, producing commercial campaigns and music videos from animation through final compositing. Specialized in 3D animation, VFX, video editing and production workflows while collaborating with producers and supervisors on international brand projects including De Paris, Comfort, Boostrong, 100Plus Pro, Ganzberg Beer Cambodia and Cambodia Water."
-        ]
-      },
-      {
-        "dateRange": "October 2019 – November 2023",
-        "position": "Video Content Lead",
-        "company": "The Na Thailand",
-        "paragraphs": [
-          "Directed end-to-end video production and creative content for the company's digital marketing campaigns. Managed production workflows from concept to final delivery while producing commercial content for multiple health and wellness brands, including Dr.Mas, Multivit, Colla AC and Probalance."
-        ]
-      },
-      {
-        "dateRange": "June 2019 – August 2019",
-        "position": "Creative Team Lead",
-        "company": "HillKoff ",
-        "paragraphs": [
-          "Managed creative media planning and visual design across marketing campaigns and exhibitions. Led the design of a 200-meter factory facade, transforming cultural hill tribe patterns into large-scale production artwork for permanent installation."
-        ]
-      },
-      {
-        "dateRange": "2012 – 2018",
-        "position": "Freelance 2D/3D Animator, Graphic Designer & Instructor",
-        "company": "Freelance / Project-based",
-        "paragraphs": [
-          "Produced animation, motion graphics and post-production projects for commercial clients and cultural institutions, including Chiang Mai Provincial Museum, Wiang Kum Kam Museum and Siam Serpentarium. Alongside freelance production, taught VFX, Autodesk Maya and Adobe After Effects at leading universities in Chiang Mai, developing course materials and mentoring the next generation of digital artists."
-        ]
-      }
-    ]
+    ],
   },
-  "skills": {
-    "title": "Creative toolkit.",
-    "groups": [
-      {
-        "name": "Creative",
-        "tags": [
-          "Animation",
-          "Motion Design",
-          "Visual Storytelling",
-          "Creative Direction",
-          "Content Planning",
-          "Storyboarding"
-        ]
-      },
-      {
-        "name": "Post-Production",
-        "tags": [
-          "Video Editing",
-          "Motion Graphics",
-          "Compositing",
-          "Audio Editing",
-          "Quality Review",
-          "Delivery & Versioning"
-        ]
-      },
-      {
-        "name": "Software",
-        "tags": [
-          "Adobe After Effects",
-          "Adobe Premiere Pro",
-          "Adobe Photoshop",
-          "Adobe Illustrator",
-          "Adobe Audition",
-          "Blender",
-          "Davinci Resolve Studio"
-        ]
-      },
-      {
-        "name": "AI-assisted Production",
-        "tags": [
-          "ChatGPT",
-          "Gemini",
-          "Freepik AI",
-          "Luma AI Dream Machine",
-          "Google Flow",
-          "Google Veo"
-        ]
-      }
-    ]
+  skills: {
+    title: 'Creative toolkit.',
+    groups: [
+      { name: 'Creative', tags: ['Animation', 'Motion Design', 'Visual Storytelling', 'Creative Direction', 'Content Planning', 'Storyboarding'] },
+      { name: 'Post-Production', tags: ['Video Editing', 'Motion Graphics', 'Compositing', 'Audio Editing', 'Quality Review', 'Delivery & Versioning'] },
+      { name: 'Software', tags: ['Adobe After Effects', 'Adobe Premiere Pro', 'Adobe Photoshop', 'Adobe Illustrator', 'Adobe Audition'] },
+      { name: 'AI-assisted Production', tags: ['ChatGPT', 'Gemini', 'Freepik AI', 'Luma AI Dream Machine', 'Google Flow', 'Google Veo'] },
+    ],
   },
-  "announcementBar": {
-    "enabled": true,
-    "text": "เว็บไซต์กำลังปรับปรุง · สามารถติดต่อทีมงานเพื่อสอบถามงานได้ตามปกติ",
-    "size": "md"
+  announcementBar: {
+    enabled: true,
+    text: 'เว็บไซต์กำลังปรับปรุง · สามารถติดต่อทีมงานเพื่อสอบถามงานได้ตามปกติ',
+    size: 'md',
   },
-  "seo": {
-    "title": "Redsheep Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook",
-    "description": "บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ",
-    "keywords": "รับตัดต่อวิดีโอ, ตัดต่อ TikTok, ตัดต่อ YouTube, สื่อโฆษณาออนไลน์, Motion Graphic, Color Grading",
-    "siteUrl": "https://bit.ly/redsheep",
-    "ogImage": "https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png",
-    "businessType": "LocalBusiness"
-  }
+  seo: {
+    title: 'FrameCut Studio — รับตัดต่อวิดีโอ TikTok / YouTube / Facebook',
+    description: 'บริการตัดต่อวิดีโอและสร้างสื่อโฆษณาออนไลน์ครบวงจร สำหรับ TikTok, YouTube และ Facebook ทีมงานมืออาชีพ',
+    keywords: 'รับตัดต่อวิดีโอ, ตัดต่อ TikTok, ตัดต่อ YouTube, สื่อโฆษณาออนไลน์, Motion Graphic, Color Grading',
+    siteUrl: 'https://example.com',
+    ogImage: 'https://images.hostinger.com/f0f0a949-5d51-417e-95c1-67d45f7f6dc3.png',
+    businessType: 'LocalBusiness',
+  },
 };
 
 const STORAGE_KEY = 'framecut_site_content';
@@ -819,7 +621,7 @@ function render(c) {
   const experienceItems = c.experience?.items || [];
   const expCarouselDesktop = experienceItems.length > 3;
   const experienceHtml = experienceItems.map((e, i) => `
-    <div class="reveal glass-card rounded-2xl p-7 shrink-0 w-[86%] xs:w-[78%] sm:w-auto snap-center ${expCarouselDesktop ? '' : 'sm:shrink'}">
+    <div class="reveal glass-card rounded-2xl p-7 shrink-0 w-[82%] xs:w-[74%] snap-start ${expCarouselDesktop ? 'sm:w-[360px] lg:w-[400px]' : 'sm:w-auto sm:shrink'}">
       <div class="font-display text-3xl font-bold text-gradient">${String(i + 1).padStart(2, '0')}</div>
       <p class="mt-4 text-sm font-semibold text-accent">${esc(e.dateRange)}</p>
       <h3 class="mt-1 font-display text-xl font-bold">${esc(e.position)}</h3>
@@ -992,12 +794,12 @@ function render(c) {
         <h2 class="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight">${esc(c.experience.title)}</h2>
       </div>
       <div class="relative mt-12">
-        <div id="exp-track" class="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 -mx-1 px-1 ${expCarouselDesktop ? '' : 'sm:grid sm:grid-cols-3 sm:overflow-visible sm:snap-none sm:gap-6 sm:pb-0 sm:px-0 sm:mx-0'}">${experienceHtml}</div>
+        <div id="exp-track" class="flex justify-start gap-5 overflow-x-auto scroll-clean snap-x snap-mandatory scroll-smooth pt-6 pb-14 -mx-4 px-4 -mt-6 ${expCarouselDesktop ? '' : 'sm:grid sm:grid-cols-3 sm:overflow-visible sm:snap-none sm:gap-6 sm:pt-0 sm:pb-0 sm:px-0 sm:mx-0 sm:mt-0'}">${experienceHtml}</div>
         ${expShowNav ? `
-        <button type="button" id="exp-prev" class="icon-btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ก่อนหน้า">
+        <button type="button" id="exp-prev" class="icon-btn absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-10 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ก่อนหน้า">
           <i data-lucide="chevron-left" class="h-5 w-5"></i>
         </button>
-        <button type="button" id="exp-next" class="icon-btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ถัดไป">
+        <button type="button" id="exp-next" class="icon-btn absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-10 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ถัดไป">
           <i data-lucide="chevron-right" class="h-5 w-5"></i>
         </button>` : ''}
       </div>
@@ -1119,6 +921,86 @@ function render(c) {
     };
     if (expPrev) expPrev.addEventListener('click', () => scrollByCard(-1));
     if (expNext) expNext.addEventListener('click', () => scrollByCard(1));
+
+    // Constrain the track's width to exactly fit as many full cards as the
+    // available space allows, then center that block with the wrapper. This
+    // keeps the visible row symmetric against the nav buttons (which sit at
+    // the wrapper's edges) instead of the row sticking flush-left with a
+    // partial card peeking only on the right.
+    const centerExpTrack = () => {
+      if (getComputedStyle(expTrack).display !== 'flex') {
+        expTrack.style.maxWidth = ''; expTrack.style.marginLeft = ''; expTrack.style.marginRight = '';
+        return;
+      }
+      const firstCard = expTrack.querySelector(':scope > *');
+      const wrapper = expTrack.parentElement;
+      if (!firstCard || !wrapper) return;
+      const cardWidth = firstCard.getBoundingClientRect().width;
+      const gap = 20; // gap-5
+      const sidePad = 32; // px-4 on each side (16 + 16)
+      const wrapperWidth = wrapper.clientWidth;
+      const totalItems = expTrack.children.length;
+      let fitCount = Math.max(1, Math.floor((wrapperWidth + gap) / (cardWidth + gap)));
+      fitCount = Math.min(fitCount, totalItems);
+      const contentWidth = fitCount * cardWidth + (fitCount - 1) * gap + sidePad;
+      expTrack.style.maxWidth = contentWidth + 'px';
+      expTrack.style.marginLeft = 'auto';
+      expTrack.style.marginRight = 'auto';
+    };
+
+    // Show arrows only when the track actually overflows (robust regardless of
+    // grid vs. carousel layout — e.g. 3 items fit in a grid on desktop with no
+    // scrolling needed, so the arrows should disappear entirely rather than
+    // float on top of the cards).
+    const updateExpNav = () => {
+      const canScroll = expTrack.scrollWidth > expTrack.clientWidth + 4;
+      [expPrev, expNext].forEach(btn => { if (btn) btn.classList.toggle('hidden', !canScroll); });
+      if (canScroll && expPrev) expPrev.classList.toggle('opacity-40', expTrack.scrollLeft <= 4);
+      if (canScroll && expNext) expNext.classList.toggle('opacity-40', expTrack.scrollLeft >= expTrack.scrollWidth - expTrack.clientWidth - 4);
+    };
+    // Tailwind's CDN build (cdn.tailwindcss.com) applies utility classes
+    // asynchronously, so a fixed rAF delay can't be trusted to always land
+    // after the card's real width (w-[400px] etc.) is in effect. Use a
+    // ResizeObserver on the wrapper + first card instead — it fires
+    // whenever their *actual rendered* box size changes, whenever that
+    // happens, so the centering math always runs against real numbers.
+    const wrapperEl = expTrack.parentElement;
+    const firstCardEl = expTrack.querySelector(':scope > *');
+    const runExpLayout = () => { centerExpTrack(); updateExpNav(); };
+    runExpLayout();
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(runExpLayout);
+      if (wrapperEl) ro.observe(wrapperEl);
+      if (firstCardEl) ro.observe(firstCardEl);
+    } else {
+      // Fallback for older browsers without ResizeObserver support
+      requestAnimationFrame(() => requestAnimationFrame(runExpLayout));
+      window.addEventListener('load', runExpLayout);
+    }
+    expTrack.addEventListener('scroll', updateExpNav, { passive: true });
+    window.addEventListener('resize', () => { centerExpTrack(); updateExpNav(); });
+
+    // Drag-to-scroll — lets people grab the track with a finger (or mouse) and
+    // drag it directly, instead of relying only on native swipe momentum.
+    let isDragging = false, dragMoved = false, startX = 0, startScroll = 0;
+    expTrack.style.touchAction = 'pan-y';
+    expTrack.addEventListener('pointerdown', (ev) => {
+      isDragging = true; dragMoved = false;
+      startX = ev.clientX; startScroll = expTrack.scrollLeft;
+      expTrack.setPointerCapture(ev.pointerId);
+      expTrack.classList.add('dragging');
+    });
+    expTrack.addEventListener('pointermove', (ev) => {
+      if (!isDragging) return;
+      const dx = ev.clientX - startX;
+      if (Math.abs(dx) > 4) dragMoved = true;
+      expTrack.scrollLeft = startScroll - dx;
+    });
+    const endDrag = () => { isDragging = false; expTrack.classList.remove('dragging'); };
+    expTrack.addEventListener('pointerup', endDrag);
+    expTrack.addEventListener('pointercancel', endDrag);
+    expTrack.addEventListener('pointerleave', endDrag);
+    expTrack.addEventListener('click', (ev) => { if (dragMoved) { ev.preventDefault(); ev.stopPropagation(); } }, true);
   }
 
   // Nav menu indicators — shared "move to element" helper for both hover-glide and the active pill
