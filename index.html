@@ -220,6 +220,15 @@
   .scroll-clean.dragging { cursor: grabbing; scroll-snap-type: none; }
   .scroll-clean.dragging > * { pointer-events: none; }
 
+  /* Themed scrollbar for content that scrolls *inside* a card (e.g. a long
+     experience description) — thin, rounded, colored with the site's
+     primary accent instead of the browser default. */
+  .exp-scroll { scrollbar-width: thin; scrollbar-color: hsl(var(--primary) / 0.45) transparent; }
+  .exp-scroll::-webkit-scrollbar { width: 6px; }
+  .exp-scroll::-webkit-scrollbar-track { background: transparent; }
+  .exp-scroll::-webkit-scrollbar-thumb { background-color: hsl(var(--primary) / 0.45); border-radius: 999px; }
+  .exp-scroll::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--primary) / 0.7); }
+
   /* Ambient particle background — fixed, theme-colored, doesn't follow the mouse */
   #particle-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 </style>
@@ -825,12 +834,12 @@ function render(c) {
   const experienceItems = c.experience?.items || [];
   const expCarouselDesktop = experienceItems.length > 3;
   const experienceHtml = experienceItems.map((e, i) => `
-    <div class="reveal glass-card rounded-2xl p-7 shrink-0 w-[82%] xs:w-[74%] snap-start ${expCarouselDesktop ? 'sm:w-[360px] lg:w-[400px]' : 'sm:w-auto sm:shrink'}">
+    <div class="reveal glass-card rounded-2xl p-7 h-[460px] flex flex-col snap-start">
       <div class="font-display text-3xl font-bold text-gradient">${String(i + 1).padStart(2, '0')}</div>
       <p class="mt-4 text-sm font-semibold text-accent">${esc(e.dateRange)}</p>
       <h3 class="mt-1 font-display text-xl font-bold">${esc(e.position)}</h3>
       <p class="text-muted-foreground font-medium">${esc(e.company)}</p>
-      <div class="mt-4 space-y-3 text-sm text-muted-foreground leading-relaxed">
+      <div class="exp-scroll mt-4 flex-1 min-h-0 overflow-y-auto pr-2 space-y-3 text-sm text-muted-foreground leading-relaxed">
         ${(e.paragraphs || []).map(p => `<p>${esc(p)}</p>`).join('')}
       </div>
     </div>`).join('');
@@ -997,16 +1006,21 @@ function render(c) {
         <p class="text-sm font-semibold uppercase tracking-widest text-accent">ประสบการณ์ทำงาน</p>
         <h2 class="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight">${esc(c.experience.title)}</h2>
       </div>
-      <div class="relative mt-12">
-        <div id="exp-track" class="flex justify-start gap-5 overflow-x-auto scroll-clean snap-x snap-mandatory scroll-smooth pt-6 pb-14 -mx-4 px-4 -mt-6 ${expCarouselDesktop ? '' : 'sm:grid sm:grid-cols-3 sm:overflow-visible sm:snap-none sm:gap-6 sm:pt-0 sm:pb-0 sm:px-0 sm:mx-0 sm:mt-0'}">${experienceHtml}</div>
+      <div class="mt-12 flex items-center gap-2 sm:gap-4">
         ${expShowNav ? `
-        <button type="button" id="exp-prev" class="icon-btn absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-10 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ก่อนหน้า">
+        <button type="button" id="exp-prev" class="icon-btn shrink-0 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ก่อนหน้า">
           <i data-lucide="chevron-left" class="h-5 w-5"></i>
-        </button>
-        <button type="button" id="exp-next" class="icon-btn absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-10 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ถัดไป">
+        </button>` : ''}
+        <div id="exp-track" class="min-w-0 flex-1 grid grid-flow-col items-stretch auto-cols-[100%] gap-5 overflow-x-auto scroll-clean snap-x snap-mandatory scroll-smooth pt-6 pb-14 -mx-4 px-4 -mt-6 ${expCarouselDesktop ? 'sm:auto-cols-[calc((100%_-_2.5rem)/3)]' : 'sm:grid-flow-row sm:grid-cols-3 sm:auto-cols-auto sm:overflow-visible sm:snap-none sm:gap-6 sm:pt-0 sm:pb-0 sm:px-0 sm:mx-0 sm:mt-0'}">${experienceHtml}</div>
+        ${expShowNav ? `
+        <button type="button" id="exp-next" class="icon-btn shrink-0 grid place-items-center h-10 w-10 rounded-full border border-border bg-card/90 backdrop-blur shadow-lg ${expCarouselDesktop ? '' : 'sm:hidden'}" aria-label="ถัดไป">
           <i data-lucide="chevron-right" class="h-5 w-5"></i>
         </button>` : ''}
       </div>
+      ${expShowNav ? `
+      <div id="exp-dots" class="mt-4 flex items-center justify-center gap-2">
+        ${experienceItems.map((_, i) => `<button type="button" class="exp-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-all duration-300" data-index="${i}" aria-label="ไปที่ประสบการณ์ที่ ${i + 1}"></button>`).join('')}
+      </div>` : ''}
     </section>` : ''}
 
     <!-- Skills -->
@@ -1126,63 +1140,62 @@ function render(c) {
     if (expPrev) expPrev.addEventListener('click', () => scrollByCard(-1));
     if (expNext) expNext.addEventListener('click', () => scrollByCard(1));
 
-    // Constrain the track's width to exactly fit as many full cards as the
-    // available space allows, then center that block with the wrapper. This
-    // keeps the visible row symmetric against the nav buttons (which sit at
-    // the wrapper's edges) instead of the row sticking flush-left with a
-    // partial card peeking only on the right.
-    const centerExpTrack = () => {
-      if (getComputedStyle(expTrack).display !== 'flex') {
-        expTrack.style.maxWidth = ''; expTrack.style.marginLeft = ''; expTrack.style.marginRight = '';
-        return;
-      }
-      const firstCard = expTrack.querySelector(':scope > *');
-      const wrapper = expTrack.parentElement;
-      if (!firstCard || !wrapper) return;
-      const cardWidth = firstCard.getBoundingClientRect().width;
-      const gap = 20; // gap-5
-      const sidePad = 32; // px-4 on each side (16 + 16)
-      const wrapperWidth = wrapper.clientWidth;
-      const totalItems = expTrack.children.length;
-      let fitCount = Math.max(1, Math.floor((wrapperWidth + gap) / (cardWidth + gap)));
-      fitCount = Math.min(fitCount, totalItems);
-      const contentWidth = fitCount * cardWidth + (fitCount - 1) * gap + sidePad;
-      expTrack.style.maxWidth = contentWidth + 'px';
-      expTrack.style.marginLeft = 'auto';
-      expTrack.style.marginRight = 'auto';
-    };
-
     // Show arrows only when the track actually overflows (robust regardless of
     // grid vs. carousel layout — e.g. 3 items fit in a grid on desktop with no
     // scrolling needed, so the arrows should disappear entirely rather than
     // float on top of the cards).
+    // Mobile pagination dots — one per experience item, filled in to show how
+    // many there are before swiping, with the active one highlighted based on
+    // scroll position.
+    //
+    // Card sizing is handled entirely by CSS (grid-auto-columns:
+    // calc((100% - 2.5rem)/3) on #exp-track) instead of JS measuring and
+    // setting pixel widths — the browser's own grid layout engine computes
+    // this exactly against the track's real content-box width every time,
+    // so it can't drift out of sync the way a JS constant (gap/padding
+    // duplicated from the Tailwind classes) could.
+
+    const expDots = Array.from(document.querySelectorAll('#exp-dots .exp-dot'));
+    const updateExpDots = () => {
+      if (!expDots.length) return;
+      const firstCard = expTrack.querySelector(':scope > *');
+      const step = (firstCard ? firstCard.getBoundingClientRect().width : expTrack.clientWidth) + 20; // + gap-5
+      const active = Math.max(0, Math.min(expDots.length - 1, Math.round(expTrack.scrollLeft / step)));
+      expDots.forEach((dot, i) => {
+        const isActive = i === active;
+        dot.classList.toggle('bg-primary', isActive);
+        dot.classList.toggle('w-5', isActive);
+        dot.classList.toggle('bg-muted-foreground/30', !isActive);
+      });
+    };
+    expDots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        const firstCard = expTrack.querySelector(':scope > *');
+        const step = (firstCard ? firstCard.getBoundingClientRect().width : expTrack.clientWidth) + 20;
+        expTrack.scrollTo({ left: step * i, behavior: 'smooth' });
+      });
+    });
+
     const updateExpNav = () => {
       const canScroll = expTrack.scrollWidth > expTrack.clientWidth + 4;
       [expPrev, expNext].forEach(btn => { if (btn) btn.classList.toggle('hidden', !canScroll); });
       if (canScroll && expPrev) expPrev.classList.toggle('opacity-40', expTrack.scrollLeft <= 4);
       if (canScroll && expNext) expNext.classList.toggle('opacity-40', expTrack.scrollLeft >= expTrack.scrollWidth - expTrack.clientWidth - 4);
+      updateExpDots();
     };
-    // Tailwind's CDN build (cdn.tailwindcss.com) applies utility classes
-    // asynchronously, so a fixed rAF delay can't be trusted to always land
-    // after the card's real width (w-[400px] etc.) is in effect. Use a
-    // ResizeObserver on the wrapper + first card instead — it fires
-    // whenever their *actual rendered* box size changes, whenever that
-    // happens, so the centering math always runs against real numbers.
-    const wrapperEl = expTrack.parentElement;
-    const firstCardEl = expTrack.querySelector(':scope > *');
-    const runExpLayout = () => { centerExpTrack(); updateExpNav(); };
-    runExpLayout();
+    updateExpNav();
     if (window.ResizeObserver) {
-      const ro = new ResizeObserver(runExpLayout);
-      if (wrapperEl) ro.observe(wrapperEl);
-      if (firstCardEl) ro.observe(firstCardEl);
+      // Tailwind's CDN build applies utility classes asynchronously, so the
+      // track's scrollWidth/clientWidth right after render() can be off.
+      // Re-check whenever the track's real rendered size changes.
+      const ro = new ResizeObserver(updateExpNav);
+      ro.observe(expTrack);
     } else {
-      // Fallback for older browsers without ResizeObserver support
-      requestAnimationFrame(() => requestAnimationFrame(runExpLayout));
-      window.addEventListener('load', runExpLayout);
+      requestAnimationFrame(() => requestAnimationFrame(updateExpNav));
+      window.addEventListener('load', updateExpNav);
     }
     expTrack.addEventListener('scroll', updateExpNav, { passive: true });
-    window.addEventListener('resize', () => { centerExpTrack(); updateExpNav(); });
+    window.addEventListener('resize', updateExpNav);
 
     // Drag-to-scroll — lets people grab the track with a finger (or mouse) and
     // drag it directly, instead of relying only on native swipe momentum.
